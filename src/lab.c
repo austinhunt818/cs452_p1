@@ -6,28 +6,63 @@ list_t *list_init(void (*destroy_data)(void *), int (*compare_to)(const void *, 
     list->compare_to = compare_to;
     list->size = 0;
     list->head = (node_t *)malloc(sizeof(node_t));
+    list->head->data = NULL;
     list->head->next = list->head;
     list->head->prev = list->head;
     return list;
 }
 
 void list_destroy(list_t **list){
-
+    node_t *current = (*list)->head->next;
+    while(current != (*list)->head){
+        node_t *next = current->next;
+        (*list)->destroy_data(current->data);
+        free(current);
+        current = next;
+    }
+    free((*list)->head);
+    free(*list);
+    *list = NULL;
 }
 
 list_t *list_add(list_t *list, void *data){
 
+    node_t *new_node = (node_t *)malloc(sizeof(node_t));
+    new_node->data = data;
+    new_node->next = list->head->next;
+    new_node->prev = list->head;
+    list->head->next->prev = new_node;
+    list->head->next = new_node;
+    list->size++;
+
     return list;
 }
 
-int list_compare_to(const void *a, const void *b){
-    return 0;
-}
-
 void *list_remove_index(list_t *list, size_t index){
+    node_t *current = list->head->next;
+    // if(current == list->head){
+    //         return NULL;
+    // }
+    // for(size_t i = 0; i < index; i++){
+    //     current = current->next;
+    // }
+    // current->prev->next = current->next;
+    // current->next->prev = current->prev;
 
+    // list->size--;
+    
+    return 0;
+    
 }
 
 int list_indexof(list_t *list, void *data){
-    return 0;
+    node_t *current = list->head->next;
+    for(int i = 0; i < (int)list->size; i++){
+        if(list->compare_to(current->data, data) == 0){
+            return i;
+        }
+        current = current->next;
+    }
+
+    return -1;
 }

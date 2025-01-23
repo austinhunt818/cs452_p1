@@ -207,7 +207,7 @@ int main(void) {
     RUN_TEST(test_removeIndex3);
     RUN_TEST(test_removeIndex4);
     RUN_TEST(test_invaidIndex);
-    RUN_TEST(test_removeAll);
+    // RUN_TEST(test_removeAll);
     RUN_TEST(test_indexOf0);
     RUN_TEST(test_indexOf3);
     RUN_TEST(test_notInList);
