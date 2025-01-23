@@ -100,6 +100,39 @@ void test_removeIndex0(void) {
     }
 }
 
+void test_removeIndex0Add1(void) {
+    populate_list();
+    int *rval = (int *)list_remove_index(lst_, 0);
+    TEST_ASSERT_TRUE(lst_->size == 4);
+    TEST_ASSERT_TRUE(*rval == 4);
+    free(rval);
+    node_t *curr = lst_->head->next;
+    // List should be 3->2->1->0
+    for (int i = 3; i >= 0; i--) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->next;
+    }
+    curr = lst_->head->prev;
+    for (int i = 0; i <= 3; i++) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->prev;
+    }
+    list_add(lst_, alloc_data(5));
+    // List should be 5->3->2->1->0
+    curr = lst_->head->next;
+    for (int i = 5; i >= 0; i--) {
+        if(i == 4) continue;
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->next;
+    }
+    curr = lst_->head->prev;
+    for (int i = 0; i <= 5; i++) {
+        if(i == 4) continue;
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->prev;
+    }
+}
+
 void test_removeIndex3(void) {
     populate_list();
     int *rval = (int *)list_remove_index(lst_, 3);
@@ -118,6 +151,70 @@ void test_removeIndex3(void) {
     curr = curr->prev;
     for (int i = 1; i <= 3; i++) {
         TEST_ASSERT_TRUE(*((int *)curr->data) == i + 1);
+        curr = curr->prev;
+    }
+}
+
+void test_removeIndex3and1(void) {
+    populate_list();
+    //remove index 3
+    int *rval1 = (int *)list_remove_index(lst_, 3);
+    TEST_ASSERT_TRUE(lst_->size == 4);
+    TEST_ASSERT_TRUE(*rval1 == 1);
+    free(rval1);
+
+    //remove index 1
+    int *rval2 = (int *)list_remove_index(lst_, 1);
+    TEST_ASSERT_TRUE(lst_->size == 3);
+    TEST_ASSERT_TRUE(*rval2 == 3);
+    free(rval2);
+    
+    node_t *curr = lst_->head->next;
+    // List should be 4->2->0
+    for (int i = 4; i >= 0; i-=2) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->next;
+    }
+    // Set the curr back one node so we can check prev links
+    curr = curr->prev;
+    for (int i = 0; i <= 4; i+=2) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->prev;
+    }
+}
+
+void test_removeIndex3Add1(void) {
+    populate_list();
+    int *rval = (int *)list_remove_index(lst_, 3);
+    TEST_ASSERT_TRUE(lst_->size == 4);
+    TEST_ASSERT_TRUE(*rval == 1);
+    free(rval);
+    node_t *curr = lst_->head->next;
+    // List should be 4->3->2->0
+    for (int i = 3; i >= 1; i--) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i + 1);
+        curr = curr->next;
+    }
+    // Check the last one
+    TEST_ASSERT_TRUE(*((int *)curr->data) == 0);
+    // Set the curr back one node so we can check prev links
+    curr = curr->prev;
+    for (int i = 1; i <= 3; i++) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i + 1);
+        curr = curr->prev;
+    }
+    list_add(lst_, alloc_data(5));
+    // List should be 5->4->3->2->0
+    curr = lst_->head->next;
+    for (int i = 5; i >= 0; i--) {
+        if(i == 1) continue;
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->next;
+    }
+    curr = lst_->head->prev;
+    for (int i = 0; i <= 5; i++) {
+        if(i == 1) continue;
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
         curr = curr->prev;
     }
 }
@@ -141,7 +238,39 @@ void test_removeIndex4(void) {
     }
 }
 
-void test_invaidIndex(void) {
+void test_removeIndex4Add1(void) {
+    populate_list();
+    int *rval = (int *)list_remove_index(lst_, 4);
+    TEST_ASSERT_TRUE(lst_->size == 4);
+    TEST_ASSERT_TRUE(*rval == 0);
+    free(rval);
+    node_t *curr = lst_->head->next;
+    // List should be 4->3->2->1
+    for (int i = 3; i >= 0; i--) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i + 1);
+        curr = curr->next;
+    }
+    curr = lst_->head->prev;
+    for (int i = 0; i <= 3; i++) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i + 1);
+        curr = curr->prev;
+    }
+
+    list_add(lst_, alloc_data(5));
+    // List should be 5->4->3->2->1
+    curr = lst_->head->next;
+    for (int i = 5; i >= 1; i--) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->next;
+    }
+    curr = lst_->head->prev;
+    for (int i = 1; i <= 5; i++) {
+        TEST_ASSERT_TRUE(*((int *)curr->data) == i);
+        curr = curr->prev;
+    }
+}
+
+void test_invalidIndex(void) {
     populate_list();
     void *rval = list_remove_index(lst_, 666);
     TEST_ASSERT_TRUE(rval == NULL);
@@ -156,6 +285,7 @@ void test_invaidIndex(void) {
         TEST_ASSERT_TRUE(*((int *)curr->data) == i);
         curr = curr->prev;
     }
+    
 }
 
 void test_removeAll(void) {
@@ -206,10 +336,17 @@ int main(void) {
     RUN_TEST(test_removeIndex0);
     RUN_TEST(test_removeIndex3);
     RUN_TEST(test_removeIndex4);
-    RUN_TEST(test_invaidIndex);
+    RUN_TEST(test_invalidIndex);
     RUN_TEST(test_removeAll);
     RUN_TEST(test_indexOf0);
     RUN_TEST(test_indexOf3);
     RUN_TEST(test_notInList);
+
+    //added tests
+    RUN_TEST(test_removeIndex0Add1);
+    RUN_TEST(test_removeIndex3Add1);
+    RUN_TEST(test_removeIndex4Add1);
+    RUN_TEST(test_removeIndex3and1);
+    
     return UNITY_END();
 }
