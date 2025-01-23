@@ -40,18 +40,21 @@ list_t *list_add(list_t *list, void *data){
 
 void *list_remove_index(list_t *list, size_t index){
     node_t *current = list->head->next;
-    // if(current == list->head){
-    //         return NULL;
-    // }
-    // for(size_t i = 0; i < index; i++){
-    //     current = current->next;
-    // }
-    // current->prev->next = current->next;
-    // current->next->prev = current->prev;
+    if(index < 0 || index >= list->size || list->size == 0){
+        return NULL;
+    }
 
-    // list->size--;
+    for(size_t i = 0; i < index; i++){
+        current = current->next;
+    }
+    current->prev->next = current->next;
+    current->next->prev = current->prev;
+
+    list->size--;
+    void* data = current->data;
+    free(current);
     
-    return 0;
+    return data;
     
 }
 
