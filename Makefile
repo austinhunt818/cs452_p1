@@ -34,7 +34,7 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 check: $(TARGET_TEST)
-	ASAN_OPTIONS= ./$<
+	ASAN_OPTIONS=detect_leaks=1 ./$<
 
 .PHONY: clean
 clean:
